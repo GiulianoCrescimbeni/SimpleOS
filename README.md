@@ -17,7 +17,7 @@ SimpleOS is a basic operating system designed as a learning project to understan
 - The kernel entry function is defined in `loader.s` (written in assembly) and hands over control to `kmain`, a C function.
 - The kernel writes a simple character to the screen as a basic demonstration of its functionality.
 
-### 3. Drivers for Framebuffer and I/O Ports
+### 3. Drivers for Framebuffer, I/O Ports, and Serial Port (COM1)
 - **Framebuffer driver**:
   - Enables interaction with the video memory to write text directly to the screen.
   - Provides functions for clearing the screen and writing strings or characters at specific positions.
@@ -26,6 +26,12 @@ SimpleOS is a basic operating system designed as a learning project to understan
   - Implements low-level input and output operations for hardware communication via I/O ports.
   - Provides helper functions like `outb` and `inb` for sending and receiving data to/from specific ports.
   - Implemented in `io.s` and `io.h` under the `drivers` directory.
+- **Serial Port driver (COM1)**:
+  - Enables communication through the COM1 serial port.
+  - Provides functions to initialize the serial port, send data, and receive data.
+  - Useful for debugging and inter-process communication.
+  - Implemented in `serial.c` and `serial.h` under the `drivers` directory.
+  - Results of a serial_write() are printed in the com1.out file
 
 ---
 
