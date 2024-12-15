@@ -31,7 +31,7 @@ SimpleOS is a basic operating system designed as a learning project to understan
   - Provides functions to initialize the serial port, send data, and receive data.
   - Useful for debugging and inter-process communication.
   - Implemented in `serial.c` and `serial.h` under the `drivers` directory.
-  - Results of a serial_write() are printed in the com1.out file
+  - Results of a serial_write() are printed in the com1_log.txt file
 
 ---
 
@@ -40,6 +40,7 @@ SimpleOS is a basic operating system designed as a learning project to understan
 - **kernel/kmain.c**: Contains the kernel's entry point.
 - **link.ld**: Linker script to organize sections of the kernel binary and ensure compatibility with the Multiboot protocol.
 - **drivers**: Contains all the drivers implemented for the kernel
+- **com1_log.txt**: Contains the results of the serial port communication on com1 (Used for debug information), you can comunicate on that port with serial_write()
 
 ---
 
