@@ -1,4 +1,6 @@
-OBJECTS = loader.o kmain.o
+DRIVERS_DIR = drivers
+KERNEL_DIR = kernel
+OBJECTS = loader.o $(KERNEL_DIR)/kmain.o $(DRIVERS_DIR)/io.o $(DRIVERS_DIR)/framebuffer.o
 CC = gcc
 CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c
 LDFLAGS = -T link.ld -melf_i386
@@ -24,15 +26,21 @@ os.iso: kernel.elf
 	            iso
 
 run: os.iso
-	@echo "Kernel compilation compleated!"
+	@echo "Kernel compilation completed!"
 
-%.o: %.c
-	$(CC) $(CFLAGS)  $< -o $@
+$(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.c
+	$(CC) $(CFLAGS) $< -o $@
+
+$(DRIVERS_DIR)/%.o: $(DRIVERS_DIR)/%.c
+	$(CC) $(CFLAGS) $< -o $@
+
+$(DRIVERS_DIR)/%.o: $(DRIVERS_DIR)/%.s
+	$(AS) $(ASFLAGS) $< -o $@
 
 %.o: %.s
 	$(AS) $(ASFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o kernel.elf os.iso
+	rm -rf $(KERNEL_DIR)/*.o $(DRIVERS_DIR)/*.o *.o kernel.elf os.iso
 	rm bochslog.txt
 	@echo "Cleared working space"
