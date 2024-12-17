@@ -17,7 +17,20 @@ SimpleOS is a basic operating system designed as a learning project to understan
 - The kernel entry function is defined in `loader.s` (written in assembly) and hands over control to `kmain`, a C function.
 - The kernel writes a simple character to the screen as a basic demonstration of its functionality.
 
-### 3. Drivers for Framebuffer, I/O Ports, and Serial Port (COM1)
+### **3. Memory Segmentation**
+- A **Global Descriptor Table (GDT)** has been implemented to enable memory segmentation in protected mode.
+- The GDT defines the following segments:
+
+  | **Segment Name**        | **Selector** | **Base Address** | **Limit**       | **Type**           | **Privilege Level** |
+  |-------------------------|--------------|------------------|-----------------|--------------------|---------------------|
+  | **Null Segment**        | `0x00`       | `0x00000000`     | `0x00000000`    | Reserved           | N/A                 |
+  | **Kernel Code Segment** | `0x08`       | `0x00000000`     | `0xFFFFFFFF`    | Read/Execute       | `0` (Kernel Mode)   |
+  | **Kernel Data Segment** | `0x10`       | `0x00000000`     | `0xFFFFFFFF`    | Read/Write         | `0` (Kernel Mode)   |
+  
+- This segmentation setup ensures the separation of kernel code and data, providing a foundation for memory protection and management.
+
+
+### 4. Drivers for Framebuffer, I/O Ports, and Serial Port (COM1)
 - **Framebuffer driver**:
   - Enables interaction with the video memory to write text directly to the screen.
   - Provides functions for clearing the screen and writing strings or characters at specific positions.

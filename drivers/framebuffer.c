@@ -59,7 +59,7 @@ void clear_screen() {
 /**
 * Write a string (buffer) to the framebuffer.
 *
-* @param buf: Pointer to the string to write.
+* @param string: Pointer to the string to write.
 * @param len: Length of the string.
 * @return: The number of characters written.
 */

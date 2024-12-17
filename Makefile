@@ -1,6 +1,6 @@
 DRIVERS_DIR = drivers
 KERNEL_DIR = kernel
-OBJECTS = loader.o $(KERNEL_DIR)/kmain.o $(DRIVERS_DIR)/io.o $(DRIVERS_DIR)/framebuffer.o $(DRIVERS_DIR)/serial.o 
+OBJECTS = loader.o $(KERNEL_DIR)/kmain.o $(KERNEL_DIR)/gdt.o $(KERNEL_DIR)/gdt_load.o $(KERNEL_DIR)/kprint.o $(DRIVERS_DIR)/io.o $(DRIVERS_DIR)/framebuffer.o $(DRIVERS_DIR)/serial.o 
 CC = gcc
 CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c
 LDFLAGS = -T link.ld -melf_i386
@@ -31,6 +31,9 @@ run: os.iso
 $(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.c
 	$(CC) $(CFLAGS) $< -o $@
 
+$(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.s
+	$(AS) $(ASFLAGS) $< -o $@
+
 $(DRIVERS_DIR)/%.o: $(DRIVERS_DIR)/%.c
 	$(CC) $(CFLAGS) $< -o $@
 
@@ -43,4 +46,5 @@ $(DRIVERS_DIR)/%.o: $(DRIVERS_DIR)/%.s
 clean:
 	rm -rf $(KERNEL_DIR)/*.o $(DRIVERS_DIR)/*.o *.o kernel.elf os.iso
 	rm bochslog.txt
+	rm com1_log.txt
 	@echo "Cleared working space"

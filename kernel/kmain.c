@@ -1,13 +1,17 @@
+#include "stdint.h"
+#include "gdt.h"
 #include "../drivers/framebuffer.h"
 #include "../drivers/serial.h"
+#include "kprint.h"
 
+char gdt_loaded_message[] = "GDT Loaded";
 char welcome_message[] = "Welcome to SimpleOS";
-char debug_message[] = "This is a debug message";
 
 void kmain(void) {
+    gdt_init();
+    kprint(gdt_loaded_message, 10, 1);
     clear_screen();
-    write(welcome_message, 19);
-    serial_write(debug_message, 23);
+    kprint(welcome_message, 19, 0);
 
     while (1) {
         // infinite loop to avoid return to loader
