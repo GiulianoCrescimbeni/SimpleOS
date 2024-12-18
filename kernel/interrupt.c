@@ -9,9 +9,6 @@
 char ir0[] = " - Division by 0 interrupt - ";
 char irunknown[] = " - Unknown interrupt - ";
 
-char separator1[] = "(";
-char separator2[] = ")";
-
 /** interrupt_handler:
     Function that manage an interrupt
     @param cpu_state    Structure with the values of all the registers before the interrupt
@@ -25,7 +22,7 @@ void interrupt_handler(cpu_state_t state, idt_info_t info, stack_state_t exec) {
     switch (info.idt_index) {
 
     case 0: // Division by zero
-        kprint(ir0, 29, 1);
+        kprint(ir0, 1);
         break;
 
     case 0x21: // Keyboard interrupt
@@ -38,7 +35,7 @@ void interrupt_handler(cpu_state_t state, idt_info_t info, stack_state_t exec) {
         break;
 
     default:
-        kprint(irunknown, 23, 1);
+        kprint(irunknown, 1);
         break;
     }
     pic_acknowledge();
