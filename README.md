@@ -15,7 +15,6 @@ SimpleOS is a basic operating system designed as a learning project to understan
 ### 2. Kernel Entry Function
 - A basic **kernel entry function** has been implemented.
 - The kernel entry function is defined in `loader.s` (written in assembly) and hands over control to `kmain`, a C function.
-- The kernel writes a simple character to the screen as a basic demonstration of its functionality.
 
 ### **3. Memory Segmentation**
 - A **Global Descriptor Table (GDT)** has been implemented to enable memory segmentation in protected mode.
@@ -29,6 +28,13 @@ SimpleOS is a basic operating system designed as a learning project to understan
   
 - This segmentation setup ensures the separation of kernel code and data, providing a foundation for memory protection and management.
 
+### **4. Interrupt Handling**
+- A **Programmable Interrupt Controller (PIC)** is used to manage hardware interrupts, remapping them to avoid conflicts with CPU exceptions.
+- A **Interrupt Descriptor Table (IDT)** has been implemented to define and manage interrupt vectors.
+- Support for both hardware interrupts (e.g., keyboard, timer) and CPU exceptions has been added:
+  - **Keyboard Interrupt (IRQ1)**: Converts scancodes into ASCII characters and prints them to the screen.
+  - **Timer Interrupt (IRQ0)**: Currently acknowledges the interrupt but serves as a foundation for future scheduling and multitasking functionality.
+- The interrupt handling system preserves CPU state, processes the interrupt, and restores state before returning.
 
 ### 4. Drivers for Framebuffer, I/O Ports, and Serial Port (COM1)
 - **Framebuffer driver**:
@@ -45,6 +51,8 @@ SimpleOS is a basic operating system designed as a learning project to understan
   - Useful for debugging and inter-process communication.
   - Implemented in `serial.c` and `serial.h` under the `drivers` directory.
   - Results of a serial_write() are printed in the com1_log.txt file
+- **Keyboard driver**:
+  - Simple keyboard driver that converts scancode into ascii
 
 ---
 
@@ -83,7 +91,7 @@ make clean
 ```
 
 ### Future plans
-- Expand kernel functionality (e.g., interrupt handling, basic drivers)
+- Expand kernel functionality
 - Implement a simple memory management system.
 - Develop a basic shell for user interaction.
 

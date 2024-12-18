@@ -71,3 +71,41 @@ int write(char *string, unsigned int len) {
     }
     return len;
 }
+
+/**
+ * Prints an integer directly to the framebuffer.
+ *
+ * @param num: The number to print.
+ */
+void write_number(int num) {
+    if (num == 0) {
+        fb_write_cell(cursor_position, '0', FB_DEFAULT_FOREGROUND, FB_DEFAULT_BACKGROUND);
+        cursor_position++;
+        fb_move_cursor(cursor_position);
+        return;
+    }
+
+    // Handle negative numbers
+    if (num < 0) {
+        fb_write_cell(cursor_position, '-', FB_DEFAULT_FOREGROUND, FB_DEFAULT_BACKGROUND);
+        cursor_position++;
+        fb_move_cursor(cursor_position);
+        num = -num;
+    }
+
+    // Calculate the number of digits and store them in reverse order
+    char digits[12]; // Enough to hold a 32-bit int (-2147483648 to 2147483647)
+    int index = 0;
+
+    while (num > 0) {
+        digits[index++] = (num % 10) + '0'; // Get the last digit and convert to char
+        num /= 10;
+    }
+
+    // Print the digits in the correct order
+    for (int i = index - 1; i >= 0; i--) {
+        fb_write_cell(cursor_position, digits[i], FB_DEFAULT_FOREGROUND, FB_DEFAULT_BACKGROUND);
+        cursor_position++;
+        fb_move_cursor(cursor_position);
+    }
+}
