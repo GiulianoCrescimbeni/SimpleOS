@@ -20,12 +20,19 @@ int cursor_position = 0; // cursor position for the frame buffer
 *
 *  @param pos The new position of the cursor
 */
-void fb_move_cursor(unsigned short pos)
-{
+void fb_move_cursor(unsigned short pos) {
     outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
     outb(FB_DATA_PORT,    ((pos >> 8) & 0x00FF));
     outb(FB_COMMAND_PORT, FB_LOW_BYTE_COMMAND);
     outb(FB_DATA_PORT,    pos & 0x00FF);
+}
+
+/** fb_new_line:
+ * Create a new line movin the cursor
+ */
+void fb_new_line() {
+    cursor_position = (cursor_position / 80 + 1) * 80;
+    fb_move_cursor(cursor_position);
 }
 
 /** fb_write_cell:

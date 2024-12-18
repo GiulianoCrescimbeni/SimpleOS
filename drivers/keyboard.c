@@ -30,6 +30,6 @@ void keyboard_interrupt_handler() {
 
     if (ascii_char != 0) {
         char buffer[2] = {ascii_char, 0};
-        kprint(buffer, 1, 0);
+        kprint(buffer, 0);
     }
 }

@@ -6,19 +6,19 @@
 #include "../drivers/serial.h"
 #include "kprint.h"
 
-char gdt_loaded_message[] = "GDT Loaded ";
-char idt_loaded_message[] = "IDT Loaded ";
-char welcome_message[] = "Welcome to SimpleOS";
+char gdt_loaded_message[] = "GDT Loaded\n";
+char idt_loaded_message[] = "IDT Loaded\n";
+char welcome_message[] = "Welcome to SimpleOS\n";
 
 void kmain(void) {
     // TODO: Make a proper function
     asm volatile ("cli");
     gdt_init();
-    kprint(gdt_loaded_message, 11, 1);
+    kprint(gdt_loaded_message, 1);
     idt_init();
-    kprint(idt_loaded_message, 11, 1);
+    kprint(idt_loaded_message, 1);
     clear_screen();
-    kprint(welcome_message, 19, 0);
+    kprint(welcome_message, 0);
     //TODO: Make a proper function
     asm volatile ("sti");
 
