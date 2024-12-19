@@ -80,6 +80,14 @@ int write(char *string, unsigned int len) {
 }
 
 /**
+ * Delete a single character from the frame buffer, decrement the cursor position.
+ */
+void delete() {
+    cursor_position--;
+    fb_write_cell(cursor_position, ' ', FB_DEFAULT_FOREGROUND, FB_DEFAULT_BACKGROUND);
+}
+
+/**
  * Prints an integer directly to the framebuffer.
  *
  * @param num: The number to print.

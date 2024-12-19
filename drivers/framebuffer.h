@@ -6,6 +6,7 @@ void fb_move_cursor(unsigned short pos);
 void fb_new_line();
 void clear_screen();
 int write(char *string, unsigned int len);
+void delete();
 void write_number(int num);
 
 #endif /* INCLUDE_FRAMEBUFFER_H */
