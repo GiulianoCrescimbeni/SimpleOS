@@ -11,9 +11,9 @@ idt_load:
     ret                     ; return to the calling function
 
 enable_interrupt:
-    cli
+    sti
     ret
 
 disable_interrupt:
-    sti
+    cli
     ret
