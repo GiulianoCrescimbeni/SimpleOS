@@ -1,4 +1,5 @@
 extern kmain                    ; find the main file of the kernel
+extern pag_init
 global loader                   ; the entry symbol for ELF
 
 MAGIC_NUMBER equ 0x1BADB002     ; define the magic number constant for the multiboot protocol
@@ -14,6 +15,14 @@ align 4                         ; the code must be 4 byte aligned
     dd CHECKSUM                 ; and the checksum
 
 loader:
-    call kmain                  ; call the entry point of the kernel
+    call pag_init
+    ; jump in higher half
+    lea ebx, [higher_half]
+    jmp ebx
+
+
+higher_half:                    
+    call kmain                  ; call the entry point of the kernel in 0xC0100000
+                                
 .loop:
     jmp .loop                   ; infinite loop if the kmain function return (debug)

@@ -1,6 +1,6 @@
 #include "io.h"
 
-char *fb = (char *) 0x000B8000; // frame buffer memory address
+char *fb = (char *) 0xC00B8000; // frame buffer memory address
 int cursor_position = 0; // cursor position for the frame buffer
 
 /* The I/O ports */

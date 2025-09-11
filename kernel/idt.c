@@ -6,22 +6,21 @@
 
 #define IDT_ENTRIES 256
 
-// Struttura per una singola entry nella IDT (Interrupt Descriptor)
+// Structure for single entry in IDT (Interrupt Descriptor)
 struct idt_entry {
-    uint16_t base_low;     // Parte bassa dell'indirizzo della ISR
+    uint16_t base_low;     // Lower half of the address of ISR
     uint16_t sel;          // Segment Selector (codice)
-    uint8_t  always0;      // Sempre 0
-    uint8_t  flags;        // Flag (tipo e privilegi)
-    uint16_t base_high;    // Parte alta dell'indirizzo della ISR
+    uint8_t  always0;      // Always 0
+    uint8_t  flags;        // Flag (Type and priviledges)
+    uint16_t base_high;    // Higher half of the address of ISR
 } __attribute__((packed));
 
-// Struttura per il puntatore all'IDT (utilizzato da lidt)
+// Structure of the pointer to the IDT (utilized by lidt)
 struct idt_ptr {
-    uint16_t limit;        // Dimensione della IDT meno 1
-    uint32_t base;         // Indirizzo della IDT
+    uint16_t limit;        // Dimension of the IDT - 1
+    uint32_t base;         // Address of the IDT
 } __attribute__((packed));
 
-// La IDT vera e propria e il puntatore all'IDT
 struct idt_entry idt[IDT_ENTRIES];
 struct idt_ptr idt_descriptor;
 
@@ -64,22 +63,22 @@ extern void interrupt_handler_45(); // IRQ13
 extern void interrupt_handler_46(); // IRQ14
 extern void interrupt_handler_47(); // IRQ15
 
-// Funzione per impostare un'entry nella IDT
+// Function to set a entry in the IDT
 void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
-    idt[num].base_low = (base & 0xFFFF);        // Parte bassa dell'indirizzo
-    idt[num].base_high = (base >> 16) & 0xFFFF; // Parte alta dell'indirizzo
+    idt[num].base_low = (base & 0xFFFF);        // Lower half of the address
+    idt[num].base_high = (base >> 16) & 0xFFFF; // Higher half of the address
     idt[num].sel = sel;                         // Segment Selector (0x08 = Kernel Code)
-    idt[num].always0 = 0;                       // Sempre 0
-    idt[num].flags = flags;                     // Flag: presente, DPL, tipo
+    idt[num].always0 = 0;                       // Always 0
+    idt[num].flags = flags;                     // Flag: present, DPL, type
 }
 
-// Funzione per inizializzare la IDT
+// Inizialization of the IDT
 void idt_init() {
-    // 1. Imposta il puntatore alla IDT
+    // 1. Set the pointer to the IDT
     idt_descriptor.limit = sizeof(struct idt_entry) * IDT_ENTRIES - 1;
     idt_descriptor.base = (uint32_t)&idt;
 
-    // 2. Pulisce la IDT
+    // 2. Clear the IDT
     // TODO: Change with an implementation of memset
     for (int i = 0; i < IDT_ENTRIES; i++) {
         idt[i].base_low  = 0;
@@ -89,7 +88,7 @@ void idt_init() {
         idt[i].flags     = 0;
     }
 
-    // 3. Installazione delle routine di gestione degli interrupt
+    // 3. Setup of routines for interrupt handling
     idt_set_gate(0, (uint32_t)interrupt_handler_0, 0x08, 0x8E);
     idt_set_gate(1, (uint32_t)interrupt_handler_1, 0x08, 0x8E);
     idt_set_gate(2, (uint32_t)interrupt_handler_2, 0x08, 0x8E);
@@ -128,9 +127,9 @@ void idt_init() {
     idt_set_gate(46, (uint32_t)interrupt_handler_46, 0x08, 0x8E);
     idt_set_gate(47, (uint32_t)interrupt_handler_47, 0x08, 0x8E);
 
-    // 4. Carica la IDT
+    // 4. Load the IDT
     idt_load((uint32_t)&idt_descriptor);
 
-    // 5. Rimappa il PIC per evitare conflitti
+    // 5. Re-map the PIC to avoid conflicts
     pic_remap();
 }
