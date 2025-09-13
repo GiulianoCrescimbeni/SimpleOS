@@ -1,4 +1,4 @@
-#include "paging.h"
+#include <kernel/paging.h>
 
 // A page is 4KB
 #define PAGE_SIZE 4096

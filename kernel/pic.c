@@ -1,6 +1,6 @@
-#include "stdint.h"
-#include "../drivers/io.h"
-#include "pic.h"
+#include <stdint.h>
+#include <kernel/pic.h>
+#include <drivers/io.h>
 
 #define PIC1_COMMAND  0x20   // PIC Master command port
 #define PIC1_DATA     0x21   // PIC Master data port

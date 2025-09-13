@@ -1,10 +1,10 @@
-#include "stdint.h"
-#include "interrupt.h"
-#include "kprint.h"
-#include "pic.h"
-#include "../drivers/io.h"
-#include "../drivers/framebuffer.h"
-#include "../drivers/keyboard.h"
+#include <stdint.h>
+#include <kernel/interrupt.h>
+#include <kernel/kprint.h>
+#include <kernel/pic.h>
+#include <drivers/io.h>
+#include <drivers/framebuffer.h>
+#include <drivers/keyboard.h>
 
 char ir0[] = " - Division by 0 interrupt - ";
 char irunknown[] = " - Unknown interrupt - ";

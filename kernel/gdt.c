@@ -1,6 +1,6 @@
-#include "stdint.h"
-#include "gdt.h"
-#include "gdt_load.h"
+#include <stdint.h>
+#include <kernel/gdt.h>
+#include <kernel/gdt_load.h>
 
 #define SEGMENT_BASE    0
 #define SEGMENT_LIMIT   0xFFFFF

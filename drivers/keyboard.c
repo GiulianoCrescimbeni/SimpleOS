@@ -1,8 +1,8 @@
-#include "../kernel/stdint.h"
-#include "../kernel/kprint.h"
-#include "io.h"
-#include "../kernel/pic.h"
-#include "framebuffer.h"
+#include <stdint.h>
+#include <kernel/kprint.h>
+#include <kernel/pic.h>
+#include <drivers/io.h>
+#include <drivers/framebuffer.h>
 
 // Mapping table  Scancode -> ASCII
 static char scancode_to_ascii_lower[] = {

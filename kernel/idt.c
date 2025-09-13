@@ -1,8 +1,8 @@
-#include "stdint.h"
-#include "idt.h"
-#include "../drivers/io.h"
-#include "pic.h"
-#include "idt_load.h"
+#include <stdint.h>
+#include <kernel/idt.h>
+#include <kernel/pic.h>
+#include <kernel/idt_load.h>
+#include <drivers/io.h>
 
 #define IDT_ENTRIES 256
 
