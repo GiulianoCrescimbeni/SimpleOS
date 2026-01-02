@@ -10,7 +10,9 @@ OBJECTS = loader.o 					\
 	$(KERNEL_DIR)/irqs.o 			\
 	$(KERNEL_DIR)/pic.o 			\
 	$(KERNEL_DIR)/kprint.o 			\
+	$(KERNEL_DIR)/utils.o 			\
 	$(KERNEL_DIR)/paging.o 			\
+	$(KERNEL_DIR)/frame_allocator.o \
 	$(DRIVERS_DIR)/io.o 			\
 	$(DRIVERS_DIR)/framebuffer.o 	\
 	$(DRIVERS_DIR)/serial.o 		\

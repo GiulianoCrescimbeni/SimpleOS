@@ -1,4 +1,6 @@
-; read from the log
-mov eax, 0xDEADBEEF
-
-jmp $
+section .text
+global _start
+_start:
+    mov eax, 42
+.loop:
+    jmp .loop

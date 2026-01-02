@@ -4,5 +4,6 @@
 #include "stdint.h"
 
 void pag_init();
+void trigger_page_fault();
 
 #endif

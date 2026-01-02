@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <kernel/paging.h>
 
 // A page is 4KB
@@ -23,12 +24,16 @@ void pag_init() {
     page_directory[0] = (unsigned int)first_page_table | PAGE_PRESENT | PAGE_RW;    // 0x00000000
     page_directory[768] = (unsigned int)first_page_table | PAGE_PRESENT | PAGE_RW;  // 0xC0000000    
     
-    // Load page directory in CR3
+    // Load page directory in CR3 and enable paging
     asm volatile("mov %0, %%cr3" :: "r"(page_directory));
-
-    // Enable paging
     unsigned int cr0;
     asm volatile("mov %%cr0, %0" : "=r"(cr0));
     cr0 |= 0x80000000;
     asm volatile("mov %0, %%cr0" :: "r"(cr0));
+    asm volatile("jmp 1f\n1:"); // flush TLB / pipeline
+}
+
+void trigger_page_fault() {
+    volatile uint32_t *ptr = (uint32_t *)0xDEADBEEF;
+    *ptr = 42;
 }

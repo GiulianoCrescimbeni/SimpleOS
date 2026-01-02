@@ -3,6 +3,10 @@ ENTRY(loader)                /* the name of the entry label */
 SECTIONS {
     . = 0xC0100000;          /* the code should be loaded at 1 MB */
 
+    .multiboot : AT(ADDR(.multiboot) - 0xC0000000) { 
+        *(.multiboot) 
+    }
+
     .text ALIGN (0x1000)  : AT(ADDR(.text) - 0xC0000000)    /* align at 4 KB */
     {
         *(.text)             /* all text sections from all files */
@@ -23,4 +27,7 @@ SECTIONS {
         *(COMMON)            /* all COMMON sections from all files */
         *(.bss)              /* all bss sections from all files */
     }
+
+    KERNEL_PHYSICAL_START = 0x00100000;
+    KERNEL_PHYSICAL_END = .;
 }

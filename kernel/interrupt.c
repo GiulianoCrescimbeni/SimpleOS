@@ -6,8 +6,9 @@
 #include <drivers/framebuffer.h>
 #include <drivers/keyboard.h>
 
-char ir0[] = " - Division by 0 interrupt - ";
-char irunknown[] = " - Unknown interrupt - ";
+char ir0[] = " - Division by 0 interrupt - \n";
+char ir14[] = " - Page Fault - \n";
+char irunknown[] = " - Unknown interrupt - \n";
 
 /** interrupt_handler:
     Function that manage an interrupt
@@ -23,6 +24,10 @@ void interrupt_handler(cpu_state_t state, idt_info_t info, stack_state_t exec) {
 
     case 0: // Division by zero
         kprint(ir0, 1);
+        break;
+
+    case 14: // Page Fault
+        kprint(ir14, 0);
         break;
 
     case 0x21: // Keyboard interrupt
