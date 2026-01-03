@@ -32,6 +32,28 @@ void itoa(int value, char* str, int base) {
     str[j] = '\0';
 }
 
+void utoa(unsigned int value, char* str, int base) {
+    char* digits = "0123456789ABCDEF";
+    char buffer[32];
+    int i = 0;
+
+    if (value == 0) {
+        str[0] = '0'; str[1] = '\0';
+        return;
+    }
+
+    while (value > 0) {
+        buffer[i++] = digits[value % base];
+        value /= base;
+    }
+
+    int j = 0;
+    while (i > 0) {
+        str[j++] = buffer[--i];
+    }
+    str[j] = '\0';
+}
+
 int printf(const char* format, ...) {
     va_list args;
     va_start(args, format);
@@ -43,34 +65,37 @@ int printf(const char* format, ...) {
             i++;
             if (format[i] == 'd') {
                 int num = va_arg(args, int);
-                char num_str[16];
+                char num_str[32];
                 itoa(num, num_str, 10);
                 kprint(num_str, 0);
-                j += 0;
-            } else if (format[i] == 'u') {
+            } 
+            else if (format[i] == 'u') {
                 unsigned int num = va_arg(args, unsigned int);
-                char num_str[16];
-                itoa((int)num, num_str, 10);
+                char num_str[32];
+                utoa(num, num_str, 10);
                 kprint(num_str, 0);
-            } else if (format[i] == 'x') {
-                int num = va_arg(args, unsigned int);
-                char num_str[16];
-                itoa(num, num_str, 16);
+            } 
+            else if (format[i] == 'x') {
+                unsigned int num = va_arg(args, unsigned int);
+                char num_str[32];
+                utoa(num, num_str, 16);
                 kprint("0x", 0);
                 kprint(num_str, 0);
-                j += 0;
-            } else if (format[i] == 's') {
+            } 
+            else if (format[i] == 's') {
                 char* str = va_arg(args, char*);
+                if (!str) str = "(null)";
                 kprint(str, 0);
-                j += 0;
-            } else if (format[i] == 'c') {
+            } 
+            else if (format[i] == 'c') {
                 char c = (char)va_arg(args, int);
                 char temp[2] = {c, '\0'};
                 kprint(temp, 0);
-                j += 0;
-            } else {
-                kprint("%", 0);
+            } 
+            else {
+                // Caso %% o % sconosciuto
                 char temp[2] = {format[i], '\0'};
+                if (format[i] != '%') kprint("%", 0);
                 kprint(temp, 0);
             }
         } else {

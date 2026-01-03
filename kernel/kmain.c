@@ -8,10 +8,13 @@
 #include <kernel/paging.h>
 #include <kernel/multiboot.h>
 #include <kernel/frame_allocator.h>
+#include <kernel/kheap.h>
 #include <drivers/framebuffer.h>
 #include <drivers/serial.h>
 
 typedef void (*call_module_t)(void);
+
+extern char KERNEL_PHYSICAL_END[];
 
 static inline uint64_t combine(uint32_t high, uint32_t low) {
     return ((uint64_t)high << 32) | low;
@@ -29,13 +32,20 @@ void kmain(unsigned int ebx) {
     enable_interrupt();
 
     multiboot_info_t *mbinfo = (multiboot_info_t *) (ebx + 0xC0000000);
+
     init_frame_allocator(mbinfo);
-    unsigned int address_of_module = mbinfo->mods_addr;
-    if(address_of_module) {
 
-    }
+    uint32_t heap_start = (uint32_t)KERNEL_PHYSICAL_END + 4096;
+    uint32_t heap_size = 100 * 1024;
+    printf("Heap Start: %x\n", heap_start);
+    kheap_init(heap_start, heap_size);
 
-    //print_mmap(mbinfo);
+    //** TEST ZONE **/
+
+    //unsigned int address_of_module = mbinfo->mods_addr;
+    //if(address_of_module) {
+
+    //}
 
     //call_module_t start_program = (call_module_t) address_of_module;
     //start_program();
@@ -44,16 +54,18 @@ void kmain(unsigned int ebx) {
     // Page Fault Test 
     //trigger_page_fault();
 
-    // Frame Allocation Test
-    uint32_t f1 = alloc_frame();
-    uint32_t f2 = alloc_frame();
-    uint32_t f3 = alloc_frame();
-    printf("Allocated frames: %x %x %x\n", f1, f2, f3);
+    //** Frame Allocation Test **/
+    //uint32_t f1 = alloc_frame();
+    //uint32_t f2 = alloc_frame();
+    //uint32_t f3 = alloc_frame();
+    //printf("Allocated frames: %x %x %x\n", f1, f2, f3);
+
+    /** kmalloc Test **/
+    // uint32_t *a = (uint32_t *)kmalloc(sizeof(uint32_t));
+    // *a = 123;
+    // printf("Allocated int at %x with value %d\n", a, *a);
 
     while (1) {
         // infinite loop to avoid return to loader
     }
 }
-
-// TODO: Apri una nuova chat su chatgpt, mandagli questo file, frame_allocator.c e multiboot.h, spiegagli il problema su frame allocator, non entra nel while perchè gli address
-// sono probabilmente errati, mandagli uno screen dell'outputs
