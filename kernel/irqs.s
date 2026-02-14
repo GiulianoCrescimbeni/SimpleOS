@@ -15,30 +15,49 @@ extern  interrupt_handler
         jmp     common_interrupt_handler    ; jump to the common handler
 %endmacro
 
-common_interrupt_handler:               ; the common parts of the generic interrupt handler
-    ; save the registers
-    push    esp
+common_interrupt_handler:
+   
+    pusha ; save general registers 
 
-    add     DWORD [esp], 8
-	push	eax
-	push	ebx
-	push	ecx
-	push	edx
-	push	ebp
-	push	esi
-	push	edi
+    ; save original segment registers
+    xor eax, eax
+    mov ax, ds
+    push eax
+    mov ax, es
+    push eax
+    mov ax, fs
+    push eax
+    mov ax, gs
+    push eax
 
-	call	interrupt_handler
+	; load kernel segments (0x10 = Kernel Data Segment)
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
 
-	pop	    edi
-	pop	    esi
-	pop	    ebp
-	pop	    edx
-	pop	    ecx
-	pop	    ebx
-	pop	    eax
-	pop     esp
-	iret
+    ; call c function
+    call    interrupt_handler
+
+    ; restore segment registers
+    pop eax
+    mov gs, ax
+    pop eax
+    mov fs, ax
+    pop eax
+    mov es, ax
+    pop eax
+    mov ds, ax
+
+    ; restore general registers
+    popa
+
+    ; clean up the stack
+    add     esp, 8
+
+    ; return from interrupt
+    iret
 
 ; protected mode exceptions
 no_error_code_interrupt_handler 0

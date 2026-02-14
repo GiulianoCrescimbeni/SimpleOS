@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdarg.h>
 #include <kernel/kprint.h>
 
@@ -107,4 +108,12 @@ int printf(const char* format, ...) {
 
     va_end(args);
     return j;
+}
+
+void *memset(void* dest, int val, uint32_t len) {
+    uint8_t* ptr = (uint8_t*)dest;
+    for (uint32_t i = 0; i < len; i++) {
+        ptr[i] = (uint8_t)val;
+    }
+    return ptr;
 }

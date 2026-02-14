@@ -5,6 +5,7 @@
 #define PAGE_SIZE 4096
 #define PAGE_PRESENT 0x1
 #define PAGE_RW      0x2
+#define PAGE_USER    0x4    // User mode access
 
 unsigned int page_directory[1024] __attribute__((aligned(PAGE_SIZE)));
 unsigned int first_page_table[1024] __attribute__((aligned(PAGE_SIZE)));
@@ -12,7 +13,8 @@ unsigned int first_page_table[1024] __attribute__((aligned(PAGE_SIZE)));
 void pag_init() {
     // Identity mapping
     for (int i = 0; i < 1024; i++) {
-        first_page_table[i] = (i * PAGE_SIZE) | PAGE_PRESENT | PAGE_RW;
+        // Added PAGE_USER to allow access from Ring 3
+        first_page_table[i] = (i * PAGE_SIZE) | PAGE_PRESENT | PAGE_RW | PAGE_USER;
     }
 
     for (int i = 1; i < 1024; i++) {
@@ -21,8 +23,9 @@ void pag_init() {
 
 
     // The first entry of the page directory points to the page table
-    page_directory[0] = (unsigned int)first_page_table | PAGE_PRESENT | PAGE_RW;    // 0x00000000
-    page_directory[768] = (unsigned int)first_page_table | PAGE_PRESENT | PAGE_RW;  // 0xC0000000    
+    // Added PAGE_USER to allow access from Ring 3
+    page_directory[0] = (unsigned int)first_page_table | PAGE_PRESENT | PAGE_RW | PAGE_USER;    // 0x00000000
+    page_directory[768] = (unsigned int)first_page_table | PAGE_PRESENT | PAGE_RW | PAGE_USER;  // 0xC0000000    
     
     // Load page directory in CR3 and enable paging
     asm volatile("mov %0, %%cr3" :: "r"(page_directory));

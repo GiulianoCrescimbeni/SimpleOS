@@ -10,14 +10,19 @@ typedef struct idt_info idt_info_t;
 
 /* State of the cpu before the interrupt */
 struct cpu_state {
-	uint32_t edi;
-	uint32_t esi;
-	uint32_t ebp;
-	uint32_t edx;
-	uint32_t ecx;
-	uint32_t ebx;
-	uint32_t eax;
-	uint32_t esp;
+	uint32_t gs; 
+    uint32_t fs; 
+    uint32_t es; 
+    uint32_t ds;
+
+	uint32_t edi; 
+    uint32_t esi; 
+    uint32_t ebp; 
+    uint32_t esp;
+    uint32_t ebx; 
+    uint32_t edx; 
+    uint32_t ecx; 
+    uint32_t eax;
 } __attribute__((packed));
 typedef struct cpu_state cpu_state_t;
 

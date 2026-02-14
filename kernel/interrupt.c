@@ -7,6 +7,7 @@
 #include <drivers/keyboard.h>
 
 char ir0[] = " - Division by 0 interrupt - \n";
+char ir13[] = " - General Protection Fault - \n";
 char ir14[] = " - Page Fault - \n";
 char irunknown[] = " - Unknown interrupt - \n";
 
@@ -26,6 +27,11 @@ void interrupt_handler(cpu_state_t state, idt_info_t info, stack_state_t exec) {
         kprint(ir0, 1);
         break;
 
+    case 13: // General Protection Fault
+        kprint(ir13, 0); 
+        while(1); 
+        break;
+
     case 14: // Page Fault
         kprint(ir14, 0);
         break;
@@ -43,5 +49,5 @@ void interrupt_handler(cpu_state_t state, idt_info_t info, stack_state_t exec) {
         kprint(irunknown, 1);
         break;
     }
-    pic_acknowledge();
+    pic_acknowledge(info.idt_index);
 }

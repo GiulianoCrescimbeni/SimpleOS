@@ -13,11 +13,12 @@ OBJECTS = loader.o 					\
 	$(KERNEL_DIR)/utils.o 			\
 	$(KERNEL_DIR)/paging.o 			\
 	$(KERNEL_DIR)/frame_allocator.o \
-	$(KERNEL_DIR)/kheap.o \
+	$(KERNEL_DIR)/kheap.o 			\
+	$(KERNEL_DIR)/entry.o 			\
 	$(DRIVERS_DIR)/io.o 			\
 	$(DRIVERS_DIR)/framebuffer.o 	\
 	$(DRIVERS_DIR)/serial.o 		\
-	$(DRIVERS_DIR)/keyboard.o 
+	$(DRIVERS_DIR)/keyboard.o
 
 CC = gcc
 LD = ld

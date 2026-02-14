@@ -1,4 +1,5 @@
 global gdt_load
+global gdt_flush_tss
 
 SEGSEL_KERNEL_CS equ 0x08
 SEGSEL_KERNEL_DS equ 0x10
@@ -21,4 +22,9 @@ gdt_load:
     mov     gs, ax
     mov     fs, ax  
 
+    ret
+
+gdt_flush_tss:
+    mov     ax, [esp+4]         ; Load TSS offset
+    ltr     ax                  ; Load Task Register
     ret
