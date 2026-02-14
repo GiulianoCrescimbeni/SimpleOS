@@ -36,7 +36,7 @@ SimpleOS is a basic operating system designed as a learning project to understan
   - **Timer Interrupt (IRQ0)**: Currently acknowledges the interrupt but serves as a foundation for future scheduling and multitasking functionality.
 - The interrupt handling system preserves CPU state, processes the interrupt, and restores state before returning.
 
-### 4. Drivers for Framebuffer, I/O Ports, and Serial Port (COM1)
+### 5. Drivers for Framebuffer, I/O Ports, and Serial Port (COM1)
 - **Framebuffer driver**:
   - Enables interaction with the video memory to write text directly to the screen.
   - Provides functions for clearing the screen and writing strings or characters at specific positions.
@@ -53,6 +53,17 @@ SimpleOS is a basic operating system designed as a learning project to understan
   - Results of a serial_write() are printed in the com1_log.txt file
 - **Keyboard driver**:
   - Simple keyboard driver that converts scancode into ascii
+ 
+### **6. Basic User Mode**
+- **Ring 3 Transition**: Successfully implemented the transition from Kernel Mode (Ring 0) to User Mode (Ring 3).
+- **GDT Updates**: Extended the Global Descriptor Table to include User Code and User Data segments with specific DPL (Descriptor Privilege Level) set to 3.
+- **Task State Segment (TSS)**:
+  - Implemented and loaded the TSS to manage stack switching during interrupts.
+  - Ensures the CPU can safely switch back to the Kernel Stack (`ESP0`) when an interrupt occurs while in User Mode.
+- **Paging for User Mode**: Updated page tables to allow User Mode access (`User` bit set) to necessary memory regions (code and stack).
+- **Execution Testing**:
+  - Implemented assembly routine (`enter_user_mode`) using `iret` to simulate a return to a lower privilege level.
+  - Verified protection mechanisms by attempting privileged instructions (like `cli`) in User Mode, correctly triggering a **General Protection Fault**.
 
 ---
 
