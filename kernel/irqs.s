@@ -38,7 +38,9 @@ common_interrupt_handler:
     mov gs, ax
 
     ; call c function
-    call    interrupt_handler
+    push esp
+    call interrupt_handler
+    add esp, 4
 
     ; restore segment registers
     pop eax
@@ -98,3 +100,4 @@ no_error_code_interrupt_handler 44
 no_error_code_interrupt_handler 45
 no_error_code_interrupt_handler 46
 no_error_code_interrupt_handler 47
+no_error_code_interrupt_handler 128

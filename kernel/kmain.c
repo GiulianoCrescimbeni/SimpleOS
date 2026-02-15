@@ -20,13 +20,24 @@ extern char KERNEL_PHYSICAL_END[];
 extern void enter_user_mode(uint32_t entry_point, uint32_t user_stack);
 extern void gdt_flush_tss(uint16_t tss_selector);
 
+void syscall_write(char *msg) {
+    asm volatile(
+        "mov $1, %%eax;"    // Syscall Number 1 (SYS_WRITE)
+        "mov %0, %%ebx;"
+        "int $0x80;"
+        : 
+        : "r" (msg)
+        : "eax", "ebx"
+    );
+}
+
 void general_protection_fault_test() {
     asm volatile("cli"); 
     while(1);
 }
 
 void enter_user_mode_test() {
-    // Entered in user mode
+    syscall_write("User mode enabled\n");
     while(1);
 }
 

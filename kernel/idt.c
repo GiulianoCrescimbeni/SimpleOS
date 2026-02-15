@@ -62,6 +62,7 @@ extern void interrupt_handler_44(); // IRQ12
 extern void interrupt_handler_45(); // IRQ13
 extern void interrupt_handler_46(); // IRQ14
 extern void interrupt_handler_47(); // IRQ15
+extern void interrupt_handler_128(void); // System call handler
 
 // Function to set a entry in the IDT
 void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
@@ -126,6 +127,7 @@ void idt_init() {
     idt_set_gate(45, (uint32_t)interrupt_handler_45, 0x08, 0x8E);
     idt_set_gate(46, (uint32_t)interrupt_handler_46, 0x08, 0x8E);
     idt_set_gate(47, (uint32_t)interrupt_handler_47, 0x08, 0x8E);
+    idt_set_gate(0x80, (uint32_t)interrupt_handler_128, 0x08, 0xEE); // Syscall
 
     // 4. Load the IDT
     idt_load((uint32_t)&idt_descriptor);
