@@ -1,33 +1,26 @@
 #include <drivers/framebuffer.h>
 #include <drivers/serial.h>
 
-/** kprint:
-*  Print a string, either on screen using the frame buffer or
-*  on com1 using serial driver 
-*
-*  @param string    Pointer to the string to print
-*  @param mode      The print modality (0 for screen print, 1 for com1 print)
-*  @return          The number of printed char
-*/
-
+/** * kprint:
+ * Prints a string either to the screen (using the framebuffer driver) 
+ * or to the serial port (COM1), depending on the mode.
+ *
+ * @param string  Pointer to the string to print
+ * @param mode    Output mode (0 for screen, 1 for serial/COM1)
+ * @return        The number of characters printed
+ */
 int kprint(char* string, int mode) {
-    int i = 0; // Counter for characters
-    while (string[i] != '\0') { // Process until null terminator
-        if (string[i] == '\n') {
-            if (mode == 0) {
-                fb_new_line();
-            } else {
-                serial_write(&string[i], 1); // Send '\n' to serial output
-            }
+    int i = 0; 
+    while (string[i] != '\0') {
+        if (mode == 0) {
+            // Screen Mode: The framebuffer driver handles special chars (\n, \b) 
+            // and scrolling logic internally. We just pass the character.
+            write(&string[i], 1);
         } else {
-            if (mode == 0) {
-                write(&string[i], 1);
-            } else {
-                serial_write(&string[i], 1);
-            }
+            // Serial Mode: Send output to COM1 (useful for debugging)
+            serial_write(&string[i], 1);
         }
-        i++; // Move to the next character
+        i++;
     }
-
-    return i; // Return the number of characters printed
+    return i;
 }

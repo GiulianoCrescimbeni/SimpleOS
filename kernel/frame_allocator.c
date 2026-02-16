@@ -69,7 +69,7 @@ void init_frame_allocator(multiboot_info_t *mbinfo) {
             uint32_t start = (uint32_t)((start64 + FRAME_SIZE - 1) & ~(FRAME_SIZE - 1));
             uint32_t end   = (uint32_t)(end64 & ~(FRAME_SIZE - 1));
 
-            printf("\nUsable memory region: base = %x, end = %x\n", start, end);
+            printf("Usable memory region: base = %x, end = %x\n", start, end);
 
             for (uint32_t addr = start; addr + FRAME_SIZE <= end; addr += FRAME_SIZE) {
                 clear_frame(addr);

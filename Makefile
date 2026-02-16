@@ -1,5 +1,6 @@
 DRIVERS_DIR = drivers
 KERNEL_DIR = kernel
+USER_DIR = user
 OBJECTS = loader.o 					\
 	$(KERNEL_DIR)/kmain.o 			\
 	$(KERNEL_DIR)/gdt.o 			\
@@ -18,7 +19,9 @@ OBJECTS = loader.o 					\
 	$(DRIVERS_DIR)/io.o 			\
 	$(DRIVERS_DIR)/framebuffer.o 	\
 	$(DRIVERS_DIR)/serial.o 		\
-	$(DRIVERS_DIR)/keyboard.o
+	$(DRIVERS_DIR)/keyboard.o		\
+	$(USER_DIR)/syscall.o			\
+	$(USER_DIR)/shell.o
 
 CC = gcc
 LD = ld

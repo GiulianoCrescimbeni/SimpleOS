@@ -9,6 +9,7 @@
 
 // System call identifiers
 #define SYS_WRITE 1
+#define SYS_READ  2
 #define SYS_EXIT  0
 
 char ir0[] = " - Division by 0 interrupt - \n";
@@ -47,6 +48,10 @@ void interrupt_handler(registers_t *regs) {
             case SYS_WRITE:
 
                 printf((char*)regs->ebx);
+                break;
+            
+            case SYS_READ:
+                regs->eax = (uint32_t)keyboard_get_char();
                 break;
 
             case SYS_EXIT:

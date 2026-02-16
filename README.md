@@ -61,9 +61,6 @@ SimpleOS is a basic operating system designed as a learning project to understan
   - Implemented and loaded the TSS to manage stack switching during interrupts.
   - Ensures the CPU can safely switch back to the Kernel Stack (`ESP0`) when an interrupt occurs while in User Mode.
 - **Paging for User Mode**: Updated page tables to allow User Mode access (`User` bit set) to necessary memory regions (code and stack).
-- **Execution Testing**:
-  - Implemented assembly routine (`enter_user_mode`) using `iret` to simulate a return to a lower privilege level.
-  - Verified protection mechanisms by attempting privileged instructions (like `cli`) in User Mode, correctly triggering a **General Protection Fault**.
 
 ---
 
@@ -104,7 +101,7 @@ make clean
 ### Future plans
 - Expand kernel functionality
 - Implement a simple memory management system.
-- Develop a basic shell for user interaction.
+- Enrich shell for user interaction.
 
 ### Contributions
 This project is open to contributions. Feel free to fork the repository and submit a pull request with your changes or improvements.

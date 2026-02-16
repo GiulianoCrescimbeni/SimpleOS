@@ -4,23 +4,49 @@
 #include <drivers/io.h>
 #include <drivers/framebuffer.h>
 
-// Mapping table  Scancode -> ASCII
+#define KB_BUFFER_SIZE 256
+
+char kb_buffer[KB_BUFFER_SIZE];
+uint32_t kb_write_ptr = 0;
+uint32_t kb_read_ptr = 0;
+
+// Helper function to add a char to the buffer (Producer)
+void keyboard_push_char(char c) {
+    uint32_t next_write = (kb_write_ptr + 1) % KB_BUFFER_SIZE;
+    
+    // Check if buffer is full (we drop the key if full to avoid overwrite)
+    if (next_write != kb_read_ptr) {
+        kb_buffer[kb_write_ptr] = c;
+        kb_write_ptr = next_write;
+    }
+}
+
+// Function called by the System Call to retrieve a key (Consumer)
+char keyboard_get_char() {
+    if (kb_read_ptr == kb_write_ptr) {
+        return 0; // Buffer is empty
+    }
+
+    char c = kb_buffer[kb_read_ptr];
+    kb_read_ptr = (kb_read_ptr + 1) % KB_BUFFER_SIZE;
+    return c;
+}
+
+// Mapping table Scancode -> ASCII
 static char scancode_to_ascii_lower[] = {
-    '\\',  0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '\'', 236, 0,             // 0x00-0x0E
-    0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 138, '+', '\n',                // 0x0F-0x1D
-    0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 149, 133, 0,                        // 0x1E-0x29
-    0, 151, 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '-', 0,                        // 0x2A-0x35
-    '*', 0,  ' ', 0,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,                   // 0x36-0x45
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0                            // 0x46-0x58
+    0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
+    '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
+    0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0,
+    '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*',
+    0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 static char scancode_to_ascii_upper[] = {
-    '|',  0, '!', '"', 163, 36, 37, 38, 47, '(', ')', '=', '?', '^', '<',               // 0x00-0x0E 
-    0,  'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 138, '*', '\n',                // 0x0F-0x1D
-    0,  'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 231, 176, 0,                       // 0x1E-0x29
-    0,  167, 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ';', ':', '_', 0,                       // 0x2A-0x35
-    '*', 0,  ' ', 0,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,                   // 0x36-0x45
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0                            // 0x46-0x58
+    0,  27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b',
+    '\t', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',
+    0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~', 0,
+    '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0, '*',
+    0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 static int shift_pressed = 0; // Keeps track of whether Shift is pressed
@@ -32,12 +58,6 @@ static int shift_pressed = 0; // Keeps track of whether Shift is pressed
 void keyboard_interrupt_handler() {
     // Read the scancode from the IO port
     uint8_t scancode = inb(0x60);
-
-    // Check for Backspace
-    if (scancode == 0x0E) { // Backspace scancode
-        delete();
-        return;
-    }
 
     // Check for break codes (key release events)
     if (scancode & 0x80) {
@@ -58,7 +78,7 @@ void keyboard_interrupt_handler() {
     char ascii_char = shift_pressed ? scancode_to_ascii_upper[scancode] : scancode_to_ascii_lower[scancode];
 
     if (ascii_char != 0) {
-        char buffer[2] = {ascii_char, 0}; // Null-terminated string
-        kprint(buffer, 0);
+        // Save in buffer for syscall
+        keyboard_push_char(ascii_char);
     }
 }
