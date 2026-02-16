@@ -3,6 +3,8 @@
 #include <kernel/kprint.h>
 #include <kernel/utils.h>
 
+#include <debug.h>
+
 #define FRAME_SIZE 4096 // 4KB
 #define BITMAP_SIZE (MAX_FRAMES / 8)
 
@@ -69,7 +71,7 @@ void init_frame_allocator(multiboot_info_t *mbinfo) {
             uint32_t start = (uint32_t)((start64 + FRAME_SIZE - 1) & ~(FRAME_SIZE - 1));
             uint32_t end   = (uint32_t)(end64 & ~(FRAME_SIZE - 1));
 
-            printf("Usable memory region: base = %x, end = %x\n", start, end);
+            DEBUG_LOG("[FRAME ALLOCATOR] Usable memory region: base = %x, end = %x\n", start, end);
 
             for (uint32_t addr = start; addr + FRAME_SIZE <= end; addr += FRAME_SIZE) {
                 clear_frame(addr);
@@ -128,7 +130,7 @@ void init_frame_allocator(multiboot_info_t *mbinfo) {
         }
     }
     
-    printf("Frame allocator initialized: %u frames available\n", total_frames);
+    DEBUG_LOG("[FRAME ALLOCATOR] Frame allocator initialized: %u frames available\n", total_frames);
 }
 
 uint32_t alloc_frame() {
@@ -140,6 +142,6 @@ uint32_t alloc_frame() {
         }
     }
 
-    kprint("No free frames available\n", 1);
+    DEBUG_LOG("[FRAME ALLOCATOR]No free frames available\n");
     return 0;
 }

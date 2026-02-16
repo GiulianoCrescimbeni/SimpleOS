@@ -3,4 +3,5 @@ timeout=0
 
 title os
 kernel /boot/kernel.elf
+module /boot/ramdisk.tar
 module /boot/modules/program

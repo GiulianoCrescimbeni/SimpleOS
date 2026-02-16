@@ -70,3 +70,54 @@ void syscall_read_line(char *buffer, int max_len) {
         }
     }
 }
+
+int syscall_list_files(int index, char *buffer) {
+    int ret;
+    asm volatile(
+        "mov $3, %%eax;" 
+        "mov %1, %%ebx;"
+        "mov %2, %%ecx;"
+        "int $0x80;" 
+        "mov %%eax, %0;" 
+        : "=r" (ret) 
+        : "m" (index), "m" (buffer)
+        : "eax", "ebx", "ecx"
+    );
+    return ret;
+}
+
+int syscall_read_file(char *filename, char *buffer) {
+    int ret;
+    asm volatile(
+        "mov $4, %%eax;" 
+        "mov %1, %%ebx;"
+        "mov %2, %%ecx;"
+        "int $0x80;" 
+        "mov %%eax, %0;" 
+        : "=r" (ret) 
+        : "m" (filename), "m" (buffer)
+        : "eax", "ebx", "ecx"
+    );
+    return ret;
+}
+
+int syscall_create_file(char *filename) {
+    int ret;
+    asm volatile("mov $5, %%eax; mov %1, %%ebx; int $0x80; mov %%eax, %0" 
+                 : "=r"(ret) : "m"(filename) : "eax", "ebx");
+    return ret;
+}
+
+int syscall_write_file(char *filename, char *content, int len) {
+    int ret;
+    asm volatile("mov $6, %%eax; mov %1, %%ebx; mov %2, %%ecx; mov %3, %%edx; int $0x80; mov %%eax, %0" 
+                 : "=r"(ret) : "m"(filename), "m"(content), "m"(len) : "eax", "ebx", "ecx", "edx");
+    return ret;
+}
+
+int syscall_delete_file(char *filename) {
+    int ret;
+    asm volatile("mov $7, %%eax; mov %1, %%ebx; int $0x80; mov %%eax, %0" 
+                 : "=r"(ret) : "m"(filename) : "eax", "ebx");
+    return ret;
+}

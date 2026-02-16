@@ -3,14 +3,21 @@
 #include <kernel/kprint.h>
 #include <kernel/pic.h>
 #include <kernel/utils.h>
+#include <kernel/fs.h>
+#include <kernel/tar.h>
 #include <drivers/io.h>
 #include <drivers/framebuffer.h>
 #include <drivers/keyboard.h>
 
 // System call identifiers
-#define SYS_WRITE 1
-#define SYS_READ  2
-#define SYS_EXIT  0
+#define SYS_EXIT            0
+#define SYS_WRITE           1
+#define SYS_READ            2
+#define SYS_LIST_FILES      3
+#define SYS_READ_FILE       4
+#define SYS_CREATE_FILE     5
+#define SYS_WRITE_FILE      6
+#define SYS_DELETE_FILE     7
 
 char ir0[] = " - Division by 0 interrupt - \n";
 char ir13[] = " - General Protection Fault - \n";
@@ -57,6 +64,71 @@ void interrupt_handler(registers_t *regs) {
             case SYS_EXIT:
                 kprint("SYS_EXIT.\n", 0x0F);
                 while(1); // Block the process
+                break;
+            
+            case SYS_LIST_FILES:
+                {
+                    fs_node_t *node = get_tar_file_by_index(regs->ebx);
+                    char *usr_buf = (char*)regs->ecx;
+                    
+                    if (node != 0) {
+                        int i = 0;
+                        while(node->name[i] != 0) {
+                            usr_buf[i] = node->name[i];
+                            i++;
+                        }
+                        usr_buf[i] = 0;
+                        regs->eax = node->flags;
+                    } else {
+                        regs->eax = -1;
+                    }
+                }
+                break;
+
+            case SYS_READ_FILE:
+                {
+                    char *filename = (char*)regs->ebx;
+                    char *content_buf = (char*)regs->ecx;
+                    
+                    fs_node_t *node = get_tar_file_by_name(filename);
+                    
+                    if (node != 0) {
+                        uint32_t read = read_fs(node, 0, 2048, (uint8_t*)content_buf);
+                        content_buf[read] = 0;
+                        regs->eax = read;
+                    } else {
+                        regs->eax = -1;
+                    }
+                }
+                break;
+
+            case SYS_CREATE_FILE:
+                {
+                    char *filename = (char*)regs->ebx;
+                    regs->eax = tar_create_file(filename);
+                }
+                break;
+
+            case SYS_WRITE_FILE:
+                {
+                    char *filename = (char*)regs->ebx;
+                    char *content = (char*)regs->ecx;
+                    int len = regs->edx;
+
+                    fs_node_t *node = get_tar_file_by_name(filename);
+                    if (node) {
+                        regs->eax = write_fs(node, 0, len, (uint8_t*)content);
+                    } else {
+                        regs->eax = -1;
+                    }
+                }
+                break;
+
+            case SYS_DELETE_FILE:
+                {
+                    char *filename = (char*)regs->ebx;
+                    regs->eax = tar_delete_file(filename);
+                }
                 break;
 
             default:

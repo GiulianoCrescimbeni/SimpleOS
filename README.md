@@ -62,6 +62,17 @@ SimpleOS is a basic operating system designed as a learning project to understan
   - Ensures the CPU can safely switch back to the Kernel Stack (`ESP0`) when an interrupt occurs while in User Mode.
 - **Paging for User Mode**: Updated page tables to allow User Mode access (`User` bit set) to necessary memory regions (code and stack).
 
+### 7. Temporary File System (RAMDisk)
+- **Virtual File System (VFS)**:
+  - Implemented a **VFS abstraction layer** to manage file nodes (`fs_node_t`) and standard operations (`read`, `write`, `cat`, `rm`) uniformly, independent of the underlying storage device.
+- **Storage Mechanism**:
+  - Utilizes a **RAMDisk** approach where a standard `.tar` archive is loaded into physical memory by GRUB as a **Multiboot Module**.
+  - The file system is **non-persistent** (changes are lost on reboot), serving as an initial RamDisk (InitRD).
+- **TAR Driver**:
+  - Implemented a parser for the **USTAR (TAR)** file format in `kernel/tar.c`.
+  - Scans the memory region provided by GRUB to identify file headers, convert octal sizes, and map content offsets.
+  - Dynamically creates VFS nodes for files found within the archive.
+
 ---
 
 ## Current Code Structure
@@ -100,7 +111,6 @@ make clean
 
 ### Future plans
 - Expand kernel functionality
-- Implement a simple memory management system.
 - Enrich shell for user interaction.
 
 ### Contributions

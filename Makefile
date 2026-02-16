@@ -16,6 +16,8 @@ OBJECTS = loader.o 					\
 	$(KERNEL_DIR)/frame_allocator.o \
 	$(KERNEL_DIR)/kheap.o 			\
 	$(KERNEL_DIR)/entry.o 			\
+	$(KERNEL_DIR)/fs.o 				\
+	$(KERNEL_DIR)/tar.o 			\
 	$(DRIVERS_DIR)/io.o 			\
 	$(DRIVERS_DIR)/framebuffer.o 	\
 	$(DRIVERS_DIR)/serial.o 		\
@@ -37,6 +39,7 @@ kernel.elf: $(OBJECTS)
 
 os.iso: kernel.elf
 	cp kernel.elf iso/boot/kernel.elf
+	cp ramdisk.tar iso/boot/
 	genisoimage -R                              \
 	            -b boot/grub/stage2_eltorito    \
 	            -no-emul-boot                   \
