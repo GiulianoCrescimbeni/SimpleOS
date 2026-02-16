@@ -64,7 +64,7 @@ SimpleOS is a basic operating system designed as a learning project to understan
 
 ### 7. Temporary File System (RAMDisk)
 - **Virtual File System (VFS)**:
-  - Implemented a **VFS abstraction layer** to manage file nodes (`fs_node_t`) and standard operations (`read`, `write`, `cat`, `rm`) uniformly, independent of the underlying storage device.
+  - Implemented a **VFS abstraction layer** to manage file nodes (`fs_node_t`) and standard operations (`ls`, `write`, `cat`, `rm`) uniformly, independent of the underlying storage device.
 - **Storage Mechanism**:
   - Utilizes a **RAMDisk** approach where a standard `.tar` archive is loaded into physical memory by GRUB as a **Multiboot Module**.
   - The file system is **non-persistent** (changes are lost on reboot), serving as an initial RamDisk (InitRD).
