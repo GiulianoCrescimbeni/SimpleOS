@@ -1,6 +1,7 @@
 #include <user/shell.h>
 #include <user/syscall.h>
 #include <kernel/fs.h>
+#include <kernel/utils.h>
 
 int strcmp(const char *s1, const char *s2) {
     while (*s1 && (*s1 == *s2)) {
@@ -24,6 +25,15 @@ int strlen(const char *str) {
     return len;
 }
 
+int atoi(char *str) {
+    int res = 0;
+    for (int i = 0; str[i] != '\0'; ++i) {
+        if (str[i] >= '0' && str[i] <= '9')
+            res = res * 10 + str[i] - '0';
+    }
+    return res;
+}
+
 void shell_main() {
     char command_buffer[64];
     char file_buffer[2048];
@@ -44,6 +54,11 @@ void shell_main() {
             syscall_write(" - touch <filename>: create a new empty file\n");
             syscall_write(" - write <filename> <content>: write content to a file\n");
             syscall_write(" - rm <filename>: delete a file\n");
+            syscall_write(" - uptime: show system uptime in seconds\n");
+            syscall_write(" - sleep: sleep for a half second\n");
+            syscall_write(" - ps: list running processes\n");
+            syscall_write(" - kill <pid>: kill a process by PID\n");
+            syscall_write(" - clear: clear the screen\n");
         } 
         else if (strcmp(command_buffer, "exit") == 0) {
             syscall_write("\nExiting Shell...\n");
@@ -135,6 +150,61 @@ void shell_main() {
             } else {
                 syscall_write("Unknown error.\n");
             }
+        }
+        else if (strcmp(command_buffer, "uptime") == 0) {
+            uint32_t ticks = syscall_get_ticks();
+            uint32_t seconds = ticks / 100;
+            
+            char num_buf[32];
+            itoa(seconds, num_buf, 10);
+            
+            syscall_write("System Up Time: ");
+            syscall_write(num_buf);
+            syscall_write(" seconds.\n");
+        }
+        else if (str_starts_with(command_buffer, "sleep")) {
+            syscall_write("Sleeping...\n");
+            syscall_sleep(100);
+            syscall_write("Woke up!\n");
+        }
+        else if (str_starts_with(command_buffer, "kill ")) {
+            char *pid_str = command_buffer + 5;
+            int pid = atoi(pid_str);
+            
+            if (pid > 0) {
+                int res = syscall_kill(pid);
+                if (res == 0) {
+                    syscall_write("Process killed.\n");
+                } else {
+                    syscall_write("Error: Could not kill process.\n");
+                }
+            } else {
+                syscall_write("Invalid PID.\n");
+            }
+        }
+        else if (strcmp(command_buffer, "ps") == 0) {
+            process_info_t procs[10];
+            int count = syscall_get_process_list(procs, 10);
+            
+            syscall_write("\nPID  | Name\n");
+            syscall_write("-----|--------------------\n");
+            
+            for (int i = 0; i < count; i++) {
+                char pid_buf[10];
+                itoa(procs[i].pid, pid_buf, 10);
+                
+                syscall_write(pid_buf);
+                
+                int pad = 5 - strlen(pid_buf);
+                while(pad-- > 0) syscall_write(" ");
+                
+                syscall_write("| ");
+                syscall_write(procs[i].name);
+                syscall_write("\n");
+            }
+        }
+        else if (strcmp(command_buffer, "clear") == 0) {
+            syscall_clear();
         }
         else if (command_buffer[0] != '\0') {
              syscall_write("\nUnknown command: ");

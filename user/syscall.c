@@ -121,3 +121,33 @@ int syscall_delete_file(char *filename) {
                  : "=r"(ret) : "m"(filename) : "eax", "ebx");
     return ret;
 }
+
+uint32_t syscall_get_ticks() {
+    uint32_t ret;
+    asm volatile("mov $8, %%eax; int $0x80; mov %%eax, %0" : "=r"(ret) :: "eax");
+    return ret;
+}
+
+void syscall_sleep(uint32_t ticks) {
+    asm volatile("mov $9, %%eax; mov %0, %%ebx; int $0x80" :: "r"(ticks) : "eax", "ebx");
+}
+
+int syscall_kill(uint32_t pid) {
+    int ret;
+    asm volatile("mov $10, %%eax; mov %1, %%ebx; int $0x80; mov %%eax, %0" 
+                 : "=r"(ret) : "m"(pid) : "eax", "ebx");
+    return ret;
+}
+
+int syscall_get_process_list(process_info_t *buffer, int max_count) {
+    int ret;
+    asm volatile("mov $11, %%eax; mov %1, %%ebx; mov %2, %%ecx; int $0x80; mov %%eax, %0" 
+                 : "=r"(ret) 
+                 : "m"(buffer), "m"(max_count) 
+                 : "eax", "ebx", "ecx");
+    return ret;
+}
+
+void syscall_clear() {
+    asm volatile("mov $12, %%eax; int $0x80" ::: "eax");
+}

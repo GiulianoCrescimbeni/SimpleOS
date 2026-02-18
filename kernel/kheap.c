@@ -1,9 +1,12 @@
 #include <kernel/kheap.h>
 #include <kernel/utils.h>
 #include <kernel/frame_allocator.h>
+#include <kernel/lock.h>
+#include <kernel/interrupt.h>
 
 static heap_header_t *head = 0;
 static uint32_t heap_end_address = 0; // Track the end of the virtual heap
+static spinlock_t heap_lock = 0;
 
 // External function from frame_allocator.c
 extern uint32_t alloc_frame();
@@ -65,6 +68,8 @@ void *kheap_extend(uint32_t size) {
 void *kmalloc(uint32_t size) {
     if (size == 0) return 0;
 
+    uint32_t flags = acquire_irqsave(&heap_lock);
+
     // Word align the size (4 bytes) for performance
     if (size % 4 != 0) {
         size += 4 - (size % 4);
@@ -90,6 +95,8 @@ void *kmalloc(uint32_t size) {
             }
 
             current->is_free = 0;
+
+            release_irqrestore(&heap_lock, flags);
             
             // Writing address returned to user
             return (void *)((uint32_t)current + sizeof(heap_header_t));
@@ -97,16 +104,18 @@ void *kmalloc(uint32_t size) {
         
         current = current->next;
     }
-
-    // Se arriviamo qui, non c'è spazio (Out of Memory)
-    // In un OS avanzato, qui chiederemmo altri frame al Frame Allocator!
     
     // Attempt to extend the heap
-    return kheap_extend(size);
+    void *ptr = kheap_extend(size);
+
+    release_irqrestore(&heap_lock, flags);
+    return ptr;
 }
 
 void kfree(void *ptr) {
     if (ptr == 0) return;
+
+    uint32_t flags = acquire_irqsave(&heap_lock);
 
     // The header is located just before the pointer provided by the user
     heap_header_t *header = (heap_header_t *)((uint32_t)ptr - sizeof(heap_header_t));
@@ -122,4 +131,5 @@ void kfree(void *ptr) {
         }
         current = current->next;
     }
+    release_irqrestore(&heap_lock, flags);
 }

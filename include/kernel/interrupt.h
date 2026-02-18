@@ -22,5 +22,14 @@ typedef struct {
 } registers_t;
 
 void interrupt_handler(registers_t *regs);
+static inline uint32_t interrupt_save_disable() {
+    uint32_t flags;
+    asm volatile("pushf; pop %0; cli" : "=r"(flags));
+    return flags;
+}
+
+static inline void interrupt_restore(uint32_t flags) {
+    asm volatile("push %0; popf" : : "r"(flags));
+}
 
 #endif

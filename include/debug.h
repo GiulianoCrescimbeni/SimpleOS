@@ -1,9 +1,9 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include <kernel/kprint.h>
+#include <kernel/utils.h>
 
-#define VERBOSE_BOOT 0 
+#define VERBOSE_BOOT 0
 
 #if VERBOSE_BOOT == 1
     #define DEBUG_LOG(...) printf(__VA_ARGS__)

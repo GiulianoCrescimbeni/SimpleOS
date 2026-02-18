@@ -1,6 +1,10 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <kernel/kprint.h>
+ #include <kernel/idt_load.h>
+#include <kernel/lock.h>
+
+spinlock_t video_lock = 0;
 
 void itoa(int value, char* str, int base) {
     char* digits = "0123456789ABCDEF";
@@ -56,6 +60,7 @@ void utoa(unsigned int value, char* str, int base) {
 }
 
 int printf(const char* format, ...) {
+    uint32_t flags = acquire_irqsave(&video_lock);
     va_list args;
     va_start(args, format);
     
@@ -107,6 +112,7 @@ int printf(const char* format, ...) {
     }
 
     va_end(args);
+    release_irqrestore(&video_lock, flags);
     return j;
 }
 
@@ -116,4 +122,10 @@ void *memset(void* dest, int val, uint32_t len) {
         ptr[i] = (uint8_t)val;
     }
     return ptr;
+}
+
+void kstrncpy(char *dest, const char *src, int n) {
+    int i;
+    for (i = 0; i < n && src[i] != '\0'; i++) dest[i] = src[i];
+    for ( ; i < n; i++) dest[i] = '\0';
 }

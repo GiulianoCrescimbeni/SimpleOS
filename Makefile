@@ -18,10 +18,14 @@ OBJECTS = loader.o 					\
 	$(KERNEL_DIR)/entry.o 			\
 	$(KERNEL_DIR)/fs.o 				\
 	$(KERNEL_DIR)/tar.o 			\
+	$(KERNEL_DIR)/process.o 		\
+	$(KERNEL_DIR)/switch.o 			\
+	$(KERNEL_DIR)/lock.o 			\
 	$(DRIVERS_DIR)/io.o 			\
 	$(DRIVERS_DIR)/framebuffer.o 	\
 	$(DRIVERS_DIR)/serial.o 		\
 	$(DRIVERS_DIR)/keyboard.o		\
+	$(DRIVERS_DIR)/timer.o			\
 	$(USER_DIR)/syscall.o			\
 	$(USER_DIR)/shell.o
 
@@ -53,6 +57,10 @@ os.iso: kernel.elf
 
 run: os.iso
 	@echo "Kernel compilation completed!"
+	rm -rf $(KERNEL_DIR)/*.o $(DRIVERS_DIR)/*.o *.o kernel.elf
+	rm bochslog.txt
+	rm com1_log.txt
+	@echo "Cleared working space"
 
 $(KERNEL_DIR)/%.o: $(KERNEL_DIR)/%.c
 	$(CC) $(CFLAGS) $< -o $@

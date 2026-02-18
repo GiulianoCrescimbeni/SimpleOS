@@ -25,6 +25,8 @@ SimpleOS is a basic operating system designed as a learning project to understan
   | **Null Segment**        | `0x00`       | `0x00000000`     | `0x00000000`    | Reserved           | N/A                 |
   | **Kernel Code Segment** | `0x08`       | `0x00000000`     | `0xFFFFFFFF`    | Read/Execute       | `0` (Kernel Mode)   |
   | **Kernel Data Segment** | `0x10`       | `0x00000000`     | `0xFFFFFFFF`    | Read/Write         | `0` (Kernel Mode)   |
+  | **User Code Segment**   | `0x18`       | `0x00000000`     | `0xFFFFFFFF`    | Read/Execute       | `3` (User Mode)     |
+  | **User Data Segment**   | `0x20`       | `0x00000000`     | `0xFFFFFFFF`    | Read/Write         | `3` (User Mode)     |
   
 - This segmentation setup ensures the separation of kernel code and data, providing a foundation for memory protection and management.
 
@@ -72,6 +74,16 @@ SimpleOS is a basic operating system designed as a learning project to understan
   - Implemented a parser for the **USTAR (TAR)** file format in `kernel/tar.c`.
   - Scans the memory region provided by GRUB to identify file headers, convert octal sizes, and map content offsets.
   - Dynamically creates VFS nodes for files found within the archive.
+
+### 8. Multithreading & Scheduler
+
+- **Overview**: SimpleOS implements basic multithreading support via kernel threads and a preemptive round-robin scheduler driven by the PIT timer.
+- **Ready Queue**: The scheduler uses a circular linked list as the ready queue; each `process_t` node stores the thread's `esp`, PID and name.
+- **Scheduler**: A simple round-robin scheduler is implemented;
+- **Limitations & Future Work**:
+  - No priorities — scheduling is strictly round-robin.
+  - Focus is on kernel threads; a full user-mode process loader and finer isolation are future improvements.
+  - Additional synchronization primitives (semaphores, condition variables) would improve multi-threaded programs.
 
 ---
 
